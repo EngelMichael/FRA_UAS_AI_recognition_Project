@@ -11,13 +11,9 @@ def main():
         # Process the input
         if user_input == "help":
             print("Available commands:")
-            print(" - help: Show this help message")
+            print(" - help: Show commands")
             print(" - read: Input a textfile")
-            print(" - greet: Get a friendly greeting")
             print(" - exit: Quit the program")
-
-        elif user_input == "greet":
-            print("Hello! Hope you're having a great day!")
 
         elif user_input == "read":
 

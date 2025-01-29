@@ -3,8 +3,8 @@ import requests
 BASE_URL = "http://127.0.0.1:8000"
 
 
-def test_request_api_key(username):
-    """Request a new API key for a given username."""
+def request_api_key(username):
+    #Request a new API key for a given username
     response = requests.post(
         f"{BASE_URL}/request-api-key",
         json={"username": username}
@@ -18,8 +18,8 @@ def test_request_api_key(username):
         print(f"Failed to request API key: {response.status_code}, {response.text}")
         return None
     
-def test_protected_route(input_text, api_key):
-    """Access the protected route using an API key."""
+def process_data(input_text, api_key):
+    #Access the protected route using an API key
     headers = {
         "X-API-KEY": api_key,
         "Content-Type": "application/json"
@@ -28,6 +28,15 @@ def test_protected_route(input_text, api_key):
     response = requests.post(f"{BASE_URL}/process", json=data, headers=headers)
 
     if response.status_code == 200:
-        print("Process Response:", response.json())
+
+        result = response.json()
+
+        # Print the classification and probabilities
+        print("\n------------------------------Evaluation------------------------------")
+        print(f"The sentence is classified as: {result['classification']}")
+        print("Probabilities:")
+        for label, prob in result['probabilities'].items():
+            print(f"    {label}:    {prob:.4f}")
+
     else:
         print(f"Access Denied: {response.status_code}, {response.text}")

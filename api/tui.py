@@ -1,4 +1,4 @@
-from tester import test_request_api_key, test_protected_route
+from tester import request_api_key, process_data
 
 def main():
 
@@ -8,7 +8,7 @@ def main():
     print("Welcome to the Text Interface Program!")
     username = input("Please choose an username: ")
     try:
-        api_key = test_request_api_key(username)
+        api_key = request_api_key(username)
     except OSError:
         print("Could not connect to API.")
     print("\nType 'help' to see available commands or 'exit' to quit.")
@@ -21,7 +21,7 @@ def main():
 
         # Process the input
         if user_input == "help":
-            print("Available commands:")
+            print("\nAvailable commands:")
             print(" - help: Show commands")
             print(" - read: Input a textfile")
             print(" - request: Send a request")
@@ -34,7 +34,7 @@ def main():
             try:
                 file = open(filename, "r")
                 content = file.read()
-                print(content)
+                print(f"\n{content}")
                 file.close()
 
             except OSError:
@@ -43,25 +43,25 @@ def main():
         elif user_input == "request":
             try:
                 input_text = input("Please enter a text to be: ")
-                test_protected_route(input_text, api_key)
+                process_data(input_text, api_key)
+
             except OSError:
                 print("Could not connect to API.")
 
         elif user_input == "key":
             try:
-                api_key = test_request_api_key(username)
+                api_key = request_api_key(username)
             except OSError:
                 print("Could not connect to API.")
 
         elif user_input == "user":
             while True:
                 username = input("Please choose a new username: ")
-                api_key = test_request_api_key(username)
+                api_key = request_api_key(username)
                 if username != "":
                     break
 
         elif user_input == "quit":
-            print("Goodbye!")
             break
 
         else:

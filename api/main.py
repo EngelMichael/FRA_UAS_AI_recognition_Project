@@ -5,7 +5,8 @@ from typing import List
 from ai_code import classify_text_with_probabilities
 import secrets, json
 
-from transformers import BertTokenizer, BertForSequenceClassification
+import sys
+print(sys.executable)
 
 # API using the FastAPI framework
 # Packages needed: fastapi, uvicorn

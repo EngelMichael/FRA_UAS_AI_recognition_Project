@@ -2,7 +2,10 @@ from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 from typing import List
+from ai_code import classify_text_with_probabilities
 import secrets, json
+
+from transformers import BertTokenizer, BertForSequenceClassification
 
 # API using the FastAPI framework
 # Packages needed: fastapi, uvicorn
@@ -34,11 +37,10 @@ def generate_api_key(username: str) -> str:
     api_keys = load_api_keys()
 
     # Check if the username already exists
-    if username in api_keys.values():
-        raise HTTPException(
-            status_code=400,
-            detail="Username already exists. Please use the existing API key."
-        )
+    for api_key, existing_username in api_keys.items():
+        if existing_username == username:
+            # Return the existing API key if the username already exists
+            return api_key
 
     api_key = secrets.token_hex(32)
     api_keys[api_key] = username
@@ -54,11 +56,6 @@ def verify_api_key(api_key: str = Depends(api_key_header)):
         raise HTTPException(status_code=403, detail="Invalid or missing API key")
     return api_key
 
-# Load your own trained model and tokenizer
-# model_path = "./my_bert_model"
-# tokenizer = BertTokenizer.from_pretrained(model_path)
-# model = BertForSequenceClassification.from_pretrained(model_path)
-
 class APIKeyRequest(BaseModel):
     username: str
 
@@ -71,16 +68,9 @@ def request_api_key(request: APIKeyRequest):
     api_key = generate_api_key(request.username)
     return {"api_key": api_key}
 
-@app.get("/protected")
-def protected_route(api_key: str = Depends(verify_api_key)):
-    username = load_api_keys()[api_key]
-    return {"message": f"Welcome, {username}! This is a protected route."}
-
 @app.post("/process")
-def process_input(data: InputData):
-    output_value = f"Processed: {data.input}"
-    # Process data here
-    # 1. Tokenize input text
-    # 2. Pass tokenized input to model
-    # 3. Evaluate Logits
-    return {"output": output_value}
+def protected_route(data: InputData, api_key: str = Depends(verify_api_key)):
+    username = load_api_keys()[api_key]
+    print(f"Request from: {username} -> input: {data.input}")
+    result = classify_text_with_probabilities(data.input)
+    return result

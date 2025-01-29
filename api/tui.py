@@ -1,11 +1,22 @@
+from tester import test_request_api_key, test_protected_route
+
 def main():
-    print("Welcome to the Text Interface Program!")
-    print("Type 'help' to see available commands or 'exit' to quit.")
-    
+
     filename = "example.txt"
+    api_key = ""
+
+    print("Welcome to the Text Interface Program!")
+    username = input("Please choose an username: ")
+    try:
+        api_key = test_request_api_key(username)
+    except OSError:
+        print("Could not connect to API.")
+    print("\nType 'help' to see available commands or 'exit' to quit.")
 
     while True:
         # Wait for user input
+        print(f"\nCurrent user: {username}")
+        print(f"Session Key: {str(api_key)}")
         user_input = input("> ").strip().lower()
 
         # Process the input
@@ -13,7 +24,10 @@ def main():
             print("Available commands:")
             print(" - help: Show commands")
             print(" - read: Input a textfile")
-            print(" - exit: Quit the program")
+            print(" - request: Send a request")
+            print(" - key: Load API key")
+            print(" - user: Change username")
+            print(" - quit: Quit the program")
 
         elif user_input == "read":
 
@@ -26,7 +40,27 @@ def main():
             except OSError:
                 print("Could not open/read file:"), filename
 
-        elif user_input == "exit":
+        elif user_input == "request":
+            try:
+                input_text = input("Please enter a text to be: ")
+                test_protected_route(input_text, api_key)
+            except OSError:
+                print("Could not connect to API.")
+
+        elif user_input == "key":
+            try:
+                api_key = test_request_api_key(username)
+            except OSError:
+                print("Could not connect to API.")
+
+        elif user_input == "user":
+            while True:
+                username = input("Please choose a new username: ")
+                api_key = test_request_api_key(username)
+                if username != "":
+                    break
+
+        elif user_input == "quit":
             print("Goodbye!")
             break
 

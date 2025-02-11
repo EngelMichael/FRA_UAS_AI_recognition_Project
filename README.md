@@ -4,8 +4,8 @@
 ![Python](https://img.shields.io/badge/Python-3.10.2%2B-blue)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
->
-> 
+A simple Text Classifier API based on the RoBERTa model.
+
 ---
 
 ## Installation
@@ -29,7 +29,20 @@
   pip install -r requirements.txt
   ```
 
-4. **Run the API Server:**
+4. **(Optional) Import roberta_model into the directory:**
+  ```bash
+  ├── roberta_model
+  │   ├── config.json
+  │   ├── merges.txt
+  │   ├── model.safetensors
+  │   ├── special_tokens_map.json
+  │   ├── tokenizer.json
+  │   ├── tokenizer_config.json
+  │   └── vocab.json
+  ...
+  ```
+
+5. **Run the API Server:**
   ```bash
   uvicorn main:app --reload
   ```
@@ -57,22 +70,37 @@ For convenience, we have created tester files which can be used for the request.
   SERVER_IP = "http://127.0.0.1"
   PORT = "8000"
   ```
-2. **Run tui.py with Python:**
+2. **Run tui.py with Python and choose a username:**
   ```bash
   python tui.py
   ```
+  ```bash
+  Welcome to the Tester Program of the FRA_UAS_AI_recognition_Project!
+  Please choose an username:
+  ```
+  >Upon choosing a username, a key request will be sent to the API. If the request fails, you can try again with 'key'
+  
+3. **Available Commands:**
+  ```bash
+  file     #Insert your input text into example.txt
+  request  #Insert your input text directly into command line
+  key      #Reload key if connection to API is established
+  user     #Change your current username and attempt key request
+  ```
+
+
 ---
 
-## 🔑 API Endpoints
+## API Endpoints
 
 | Method | Endpoint             | Description                   | Auth Required |
 |--------|----------------------|-------------------------------|---------------|
-| POST   | `/request-api-key`   | Request a new API key         | ❌ No         |
-| POST   | `/process`           | Classify text input           | ✅ Yes        |
+| POST   | `/request-api-key`   | Request a new API key         |      No       |
+| POST   | `/process`           | Classify text input           |      Yes      |
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
 

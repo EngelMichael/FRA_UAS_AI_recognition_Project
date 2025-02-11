@@ -67,7 +67,7 @@ curl -X POST "http://localhost:8000/process" \
 For convenience, we have created tester files which can be used for the request.
 1. **Specify server ip and port in tester.py:**
   ```bash
-  SERVER_IP = "http://127.0.0.1"
+  SERVER_ADRESS = "127.0.0.1"
   PORT = "8000"
   ```
 2. **Run tui.py with Python and choose a username:**

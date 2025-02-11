@@ -1,13 +1,14 @@
 import requests
 
 # This is the code for simplifying requests to test the API
-
-BASE_URL = "http://127.0.0.1:8000"
+# For local testing use http://127.0.0.1:8000
+# For Livedemo specify IPv4 address of server machine
+SERVER_IP = "http://127.0.0.1:8000"
 
 def request_api_key(username):
     #Request a new API key for a given username
     response = requests.post(
-        f"{BASE_URL}/request-api-key",
+        f"http://{SERVER_IP}/request-api-key",
         json={"username": username}
     )
     if response.status_code == 200:
@@ -26,7 +27,7 @@ def process_data(input_text, api_key):
         "Content-Type": "application/json"
     }
     data = {"input": input_text}
-    response = requests.post(f"{BASE_URL}/process", json=data, headers=headers)
+    response = requests.post(f"http://{SERVER_IP}/process", json=data, headers=headers)
 
     if response.status_code == 200:
 

@@ -1,6 +1,7 @@
 from transformers import BertTokenizer, BertForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
 import torch.nn.functional as F
 import torch
+import asyncio
 
 # This is the backend code to the processing endpoint.
 
@@ -8,8 +9,13 @@ import torch
 model = AutoModelForSequenceClassification.from_pretrained("roberta_model")
 tokenizer = AutoTokenizer.from_pretrained("roberta_model")
 
+# Function to perform inference with probabilities (asynchronous)
+async def classify_text_with_probabilities(input_text):
+    # Run the blocking code in a separate thread to prevent blocking the event loop
+    return await asyncio.to_thread(sync_classify_text_with_probabilities, input_text)
+
 # Function to perform inference with probabilities
-def classify_text_with_probabilities(input_text):
+def sync_classify_text_with_probabilities(input_text):
 
     # Tokenize the input text
     inputs = tokenizer(input_text, return_tensors="pt", truncation=True, padding=True, max_length=512)

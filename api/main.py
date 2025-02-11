@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List
 from inference import classify_text_with_probabilities
 import secrets, json
+import aiofiles
 
 # This is the main code for the AI Classifier API using the FastAPI framework.
 #
@@ -12,6 +13,9 @@ import secrets, json
 # to run the FastAPI server. It will be accessible under:
 # http://127.0.0.1:8000 (http://127.0.0.1:8000/docs)
 # 
+# Livedemo run:
+# uvicorn main:app --host 0.0.0.0 --port 8000
+#
 # Resources
 # https://www.youtube.com/watch?v=SORiTsvnU28
 # https://timberry.dev/fastapi-with-apikeys
@@ -32,22 +36,23 @@ API_KEYS_FILE = "api_keys.json"
 # Helper functions for API key management
 # The load_api_keys() function will load all keys from the database and return them in the json format.
 # FileNotFoundError -> return empty json
-def load_api_keys():
+async def load_api_keys():
     try:
-        with open(API_KEYS_FILE, "r") as file:
-            return json.load(file)
+        async with aiofiles.open(API_KEYS_FILE, "r") as file:
+            content = await file.read()
+            return json.load(content)
     except FileNotFoundError:
         return {}
 
 # The save_api_keys(api_keys) function will save all keys from a json object to the database.
-def save_api_keys(api_keys):
-    with open(API_KEYS_FILE, "w") as file:
-        json.dump(api_keys, file, indent=4)
+async def save_api_keys(api_keys):
+    async with aiofiles.open(API_KEYS_FILE, "w") as file:
+        await json.dump(api_keys, file, indent=4)
 
 # The generate_api_key(username: str) function will generate a key for the given username, save it in the database and return it as a string.
 # If the given user already has an entry in the database, the key will be copied from the database
-def generate_api_key(username: str) -> str:
-    api_keys = load_api_keys()
+async def generate_api_key(username: str) -> str:
+    api_keys = await load_api_keys()
 
     # Check if the username already exists
     for api_key, existing_username in api_keys.items():
@@ -57,14 +62,14 @@ def generate_api_key(username: str) -> str:
     # API-Keys are generated with the secrets library
     api_key = secrets.token_hex(32)
     api_keys[api_key] = username
-    save_api_keys(api_keys)
+    await save_api_keys(api_keys)
     return api_key
 
 # Dependency to verify API key
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
-def verify_api_key(api_key: str = Depends(api_key_header)):
-    api_keys = load_api_keys()
+async def verify_api_key(api_key: str = Depends(api_key_header)):
+    api_keys = await load_api_keys()
     if api_key not in api_keys:
         raise HTTPException(status_code=403, detail="Invalid or missing API key")
     return api_key
@@ -77,13 +82,13 @@ class InputData(BaseModel):
 
 # Endpoints
 @app.post("/request-api-key")
-def request_api_key(request: APIKeyRequest):
-    api_key = generate_api_key(request.username)
+async def request_api_key(request: APIKeyRequest):
+    api_key = await generate_api_key(request.username)
     return {"api_key": api_key}
 
 @app.post("/process")
-def protected_route_process(data: InputData, api_key: str = Depends(verify_api_key)):
-    username = load_api_keys()[api_key]
+async def protected_route_process(data: InputData, api_key: str = Depends(verify_api_key)):
+    username = await load_api_keys()[api_key]
     print(f"Request from: {username} -> input: {data.input}")
-    result = classify_text_with_probabilities(data.input)
+    result = await classify_text_with_probabilities(data.input)
     return result

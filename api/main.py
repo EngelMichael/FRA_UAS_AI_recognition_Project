@@ -40,7 +40,7 @@ async def load_api_keys():
     try:
         async with aiofiles.open(API_KEYS_FILE, "r") as file:
             content = await file.read()
-            return json.load(content)
+            return json.loads(content)
     except FileNotFoundError:
         return {}
 
@@ -88,7 +88,9 @@ async def request_api_key(request: APIKeyRequest):
 
 @app.post("/process")
 async def protected_route_process(data: InputData, api_key: str = Depends(verify_api_key)):
-    username = await load_api_keys()[api_key]
+    api_keys = await load_api_keys()
+    username = api_keys.get(api_key)
+    
     print(f"Request from: {username} -> input: {data.input}")
     result = await classify_text_with_probabilities(data.input)
     return result

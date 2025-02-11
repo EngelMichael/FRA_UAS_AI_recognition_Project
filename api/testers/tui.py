@@ -7,12 +7,12 @@ def main():
     filename = "example.txt"
     api_key = ""
 
-    print("Welcome to the Text Interface Program!")
+    print("Welcome to the Tester Program of the FRA_UAS_AI_recognition_Project!")
     username = input("Please choose an username: ")
     try:
         api_key = request_api_key(username)
     except OSError:
-        print("Could not connect to API.")
+        print("Could not connect to API. Once the server is running type 'key' to reload your session key.")
     print("\nType 'help' to see available commands or 'exit' to quit.")
 
     while True:
@@ -25,18 +25,18 @@ def main():
         if user_input == "help":
             print("\nAvailable commands:")
             print(" - help: Show commands")
-            print(" - read: Input a textfile")
-            print(" - request: Send a request")
-            print(" - key: Load API key")
+            print(" - file: Use example.txt for request")
+            print(" - request: Send a request through commandline")
+            print(" - key: Reload API key")
             print(" - user: Change username")
             print(" - quit: Quit the program")
 
-        elif user_input == "read":
+        elif user_input == "file":
 
             try:
                 file = open(filename, "r")
                 content = file.read()
-                print(f"\n{content}")
+                process_data(content, api_key)
                 file.close()
 
             except OSError:

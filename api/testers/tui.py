@@ -34,7 +34,7 @@ def main():
         elif user_input == "file":
 
             try:
-                file = open(filename, "r")
+                file = open(filename, "r", encoding='utf-8')
                 content = file.read()
                 process_data(content, api_key)
                 file.close()

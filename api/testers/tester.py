@@ -7,8 +7,8 @@ import requests
 SERVER_ADDRESS = "127.0.0.1"
 PORT = "8000"
 
+#Request to /request-api-key with a given username
 def request_api_key(username):
-    #Request a new API key for a given username
     response = requests.post(
         f"http://{SERVER_ADDRESS}:{PORT}/request-api-key",
         json={"username": username}
@@ -22,8 +22,8 @@ def request_api_key(username):
         print(f"Failed to request API key: {response.status_code}, {response.text}")
         return None
     
+#Request to /process with input_text and api_key
 def process_data(input_text, api_key):
-    #Access the protected route using an API key
     headers = {
         "X-API-KEY": api_key,
         "Content-Type": "application/json"

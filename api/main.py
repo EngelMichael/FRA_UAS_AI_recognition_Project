@@ -40,14 +40,19 @@ async def load_api_keys():
     try:
         async with aiofiles.open(API_KEYS_FILE, "r") as file:
             content = await file.read()
+            if not content.strip():
+                return {}
             return json.loads(content)
     except FileNotFoundError:
+        return {}
+    except json.JSONDecodeError:
         return {}
 
 # The save_api_keys(api_keys) function will save all keys from a json object to the database.
 async def save_api_keys(api_keys):
-    async with aiofiles.open(API_KEYS_FILE, "w") as file:
-        await json.dump(api_keys, file, indent=4)
+     async with aiofiles.open(API_KEYS_FILE, "w") as file:
+        content = json.dumps(api_keys, indent=4)
+        await file.write(content)
 
 # The generate_api_key(username: str) function will generate a key for the given username, save it in the database and return it as a string.
 # If the given user already has an entry in the database, the key will be copied from the database

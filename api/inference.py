@@ -5,9 +5,18 @@ import asyncio
 
 # This is the backend code to the processing endpoint.
 
-# Load the trained model and tokenizer from collab (ephemeral)
-model = AutoModelForSequenceClassification.from_pretrained("roberta_model")
-tokenizer = AutoTokenizer.from_pretrained("roberta_model")
+try:
+    # Try loading the custom model and tokenizer
+    model = AutoModelForSequenceClassification.from_pretrained("roberta_model")
+    tokenizer = AutoTokenizer.from_pretrained("roberta_model")
+    print("Custom RoBERTa model loaded successfully.")
+    
+except Exception as e:
+    # Fallback to standard RoBERTa model if loading fails
+    print(f"Failed to load custom model. Error: {e}")
+    print("Loading standard RoBERTa model instead.")
+    model = AutoModelForSequenceClassification.from_pretrained("roberta-base")
+    tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 
 # Function to perform inference with probabilities (asynchronous)
 async def classify_text_with_probabilities(input_text):
